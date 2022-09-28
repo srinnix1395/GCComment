@@ -1,18 +1,22 @@
 package io.srinnix.gccomment.ui.comment;
 
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 
-import java.util.Objects;
-
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import io.reactivex.rxjava3.android.plugins.RxAndroidPlugins;
 import io.reactivex.rxjava3.internal.schedulers.TrampolineScheduler;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.srinnix.gccomment.data.model.Comment;
 
 public class CommentViewModelTest {
+
+    @Rule
+    public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
 
     private CommentViewModel viewModel;
 
@@ -35,39 +39,33 @@ public class CommentViewModelTest {
         CommentViewModel.UiAction.Submit action = CommentViewModel.UiAction.Submit.create(plainText);
         viewModel.action(action);
 
-        viewModel
-                .uiStateSubject
-                .test()
-                .assertValue(uiState -> {
-                    if (uiState.comments.isEmpty()) {
-                        return false;
-                    }
+        CommentViewModel.UiState uiState = viewModel.uiState.getValue();
+        Assert.assertNotNull(uiState);
+        Assert.assertNotNull(uiState.comments);
+        Assert.assertNotEquals(uiState.comments.size(), 0);
 
-                    Comment comment = uiState.comments.get(0);
-                    return Objects.equals(comment.getContent(), plainText);
-                })
-                .dispose();
+        Comment comment = uiState.comments.get(0);
+        Assert.assertEquals(comment.getContent(), plainText);
     }
 
     @Test
     public void testSubmitMultipleComments() {
-        String comment1 = "comment";
+        String comment1 = "comment1";
         CommentViewModel.UiAction.Submit action1 = CommentViewModel.UiAction.Submit.create(comment1);
         viewModel.action(action1);
 
-        String comment2 = "comment";
+        String comment2 = "comment2";
         CommentViewModel.UiAction.Submit action2 = CommentViewModel.UiAction.Submit.create(comment2);
         viewModel.action(action2);
 
-        String comment3 = "comment";
+        String comment3 = "comment3";
         CommentViewModel.UiAction.Submit action3 = CommentViewModel.UiAction.Submit.create(comment3);
         viewModel.action(action3);
 
-        viewModel
-                .uiStateSubject
-                .test()
-                .assertValue(uiState -> uiState.comments.size() == 3)
-                .dispose();
+        CommentViewModel.UiState uiState = viewModel.uiState.getValue();
+        Assert.assertNotNull(uiState);
+        Assert.assertNotNull(uiState.comments);
+        Assert.assertEquals(uiState.comments.size(), 3);
     }
 
     @Test
@@ -76,19 +74,17 @@ public class CommentViewModelTest {
         CommentViewModel.UiAction.Submit action = CommentViewModel.UiAction.Submit.create(comment);
         viewModel.action(action);
 
-        viewModel
-                .uiStateSubject
-                .test()
-                .assertValue(uiState -> {
-                    Comment createdComment = uiState.comments.get(0);
-                    String expectedJson = "{\"mentions\": [\n" +
-                            "    \"billgates\",\n" +
-                            "    \"elonmusk\"\n" +
-                            "]}";
+        CommentViewModel.UiState uiState = viewModel.uiState.getValue();
+        Assert.assertNotNull(uiState);
+        Assert.assertNotNull(uiState.comments);
+        Assert.assertEquals(uiState.comments.size(), 1);
 
-                    return createdComment.getJson().equals(expectedJson);
-                })
-                .dispose();
+        Comment createdComment = uiState.comments.get(0);
+        String expectedJson = "{\"mentions\": [\n" +
+                "    \"billgates\",\n" +
+                "    \"elonmusk\"\n" +
+                "]}";
+        Assert.assertEquals(createdComment.getJson(), expectedJson);
     }
 
     @Test
@@ -97,19 +93,17 @@ public class CommentViewModelTest {
         CommentViewModel.UiAction.Submit action = CommentViewModel.UiAction.Submit.create(comment);
         viewModel.action(action);
 
-        viewModel
-                .uiStateSubject
-                .test()
-                .assertValue(uiState -> {
-                    Comment createdComment = uiState.comments.get(0);
-                    String expectedJson = "{\"links\": [{\n" +
-                            "    \"title\": \"Tokyo 2020 Summer Olympics - Athletes, Medals & Results\",\n" +
-                            "    \"url\": \"https://olympics.com/tokyo-2020/en/\"\n" +
-                            "}]}";
+        CommentViewModel.UiState uiState = viewModel.uiState.getValue();
+        Assert.assertNotNull(uiState);
+        Assert.assertNotNull(uiState.comments);
+        Assert.assertEquals(uiState.comments.size(), 1);
 
-                    return createdComment.getJson().equals(expectedJson);
-                })
-                .dispose();
+        Comment createdComment = uiState.comments.get(0);
+        String expectedJson = "{\"links\": [{\n" +
+                "    \"title\": \"Tokyo 2020 Summer Olympics - Athletes, Medals & Results\",\n" +
+                "    \"url\": \"https://olympics.com/tokyo-2020/en/\"\n" +
+                "}]}";
+        Assert.assertEquals(createdComment.getJson(), expectedJson);
     }
 
     @Test
@@ -118,25 +112,23 @@ public class CommentViewModelTest {
         CommentViewModel.UiAction.Submit action = CommentViewModel.UiAction.Submit.create(comment);
         viewModel.action(action);
 
-        viewModel
-                .uiStateSubject
-                .test()
-                .assertValue(uiState -> {
-                    Comment createdComment = uiState.comments.get(0);
-                    String expectedJson = "{\n" +
-                            "    \"mentions\": [\n" +
-                            "        \"billgates\",\n" +
-                            "        \"elonmusk\"\n" +
-                            "    ],\n" +
-                            "    \"links\": [{\n" +
-                            "        \"title\": \"Tokyo 2020 Summer Olympics - Athletes, Medals & Results\",\n" +
-                            "        \"url\": \"https://olympics.com/tokyo-2020/en/\"\n" +
-                            "    }]\n" +
-                            "}";
+        CommentViewModel.UiState uiState = viewModel.uiState.getValue();
+        Assert.assertNotNull(uiState);
+        Assert.assertNotNull(uiState.comments);
+        Assert.assertEquals(uiState.comments.size(), 1);
 
-                    return createdComment.getJson().equals(expectedJson);
-                })
-                .dispose();
+        Comment createdComment = uiState.comments.get(0);
+        String expectedJson = "{\n" +
+                "    \"mentions\": [\n" +
+                "        \"billgates\",\n" +
+                "        \"elonmusk\"\n" +
+                "    ],\n" +
+                "    \"links\": [{\n" +
+                "        \"title\": \"Tokyo 2020 Summer Olympics - Athletes, Medals & Results\",\n" +
+                "        \"url\": \"https://olympics.com/tokyo-2020/en/\"\n" +
+                "    }]\n" +
+                "}";
+        Assert.assertEquals(createdComment.getJson(), expectedJson);
     }
 
     @Test
@@ -148,14 +140,13 @@ public class CommentViewModelTest {
         CommentViewModel.UiAction.ClickComment clickCommentAction = CommentViewModel.UiAction.ClickComment.create(0);
         viewModel.action(clickCommentAction);
 
-        viewModel
-                .uiStateSubject
-                .test()
-                .assertValue(uiState -> {
-                    Comment createdComment = uiState.comments.get(0);
-                    return !createdComment.isExpand();
-                })
-                .dispose();
+        CommentViewModel.UiState uiState = viewModel.uiState.getValue();
+        Assert.assertNotNull(uiState);
+        Assert.assertNotNull(uiState.comments);
+        Assert.assertEquals(uiState.comments.size(), 1);
+
+        Comment createdComment = uiState.comments.get(0);
+        Assert.assertFalse(createdComment.isExpand());
     }
 
     @AfterClass

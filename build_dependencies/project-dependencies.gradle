@@ -19,6 +19,7 @@ ext {
     junit = '4.13.2'
     mockito = '4.8.0'
     jsontest = '20180813'
+    arctest = '2.1.0'
 
     // Android Test
     androidJUnit = '1.1.3'
@@ -52,7 +53,8 @@ ext {
     unitTest = [
             "junit:junit:$junit",
             "org.mockito:mockito-core:$mockito",
-            "org.json:json:$jsontest"
+            "org.json:json:$jsontest",
+            "androidx.arch.core:core-testing:$arctest"
     ]
 
     androidTest = [

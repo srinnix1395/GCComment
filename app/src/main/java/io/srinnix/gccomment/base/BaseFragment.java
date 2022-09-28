@@ -9,15 +9,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewbinding.ViewBinding;
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
 public abstract class BaseFragment<VB extends ViewBinding, VM extends BaseViewModel> extends Fragment {
 
     protected VB viewBinding;
 
     protected VM viewModel;
-
-    protected CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     @Nullable
     @Override
@@ -31,20 +28,14 @@ public abstract class BaseFragment<VB extends ViewBinding, VM extends BaseViewMo
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         bindView();
-        bindAction();
-    }
-
-    @Override
-    public void onDestroy() {
-        compositeDisposable.clear();
-        super.onDestroy();
+        bindState();
     }
 
     protected void bindView() {
 
     }
 
-    protected void bindAction() {
+    protected void bindState() {
 
     }
 

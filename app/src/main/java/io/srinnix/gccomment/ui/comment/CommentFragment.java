@@ -1,6 +1,5 @@
 package io.srinnix.gccomment.ui.comment;
 
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,9 +9,6 @@ import java.util.ArrayList;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.functions.Consumer;
-import io.reactivex.rxjava3.functions.Function;
 import io.srinnix.gccomment.R;
 import io.srinnix.gccomment.base.BaseFragment;
 import io.srinnix.gccomment.data.model.Comment;
@@ -24,8 +20,6 @@ import io.srinnix.gccomment.widget.recyclerview.itemdecoration.CommentItemDecora
 
 public class CommentFragment extends BaseFragment<FragmentCommentBinding, CommentViewModel> {
 
-    public static final String TAG = "CommentFragment";
-
     private CommentAdapter commentAdapter;
 
     @Override
@@ -36,12 +30,6 @@ public class CommentFragment extends BaseFragment<FragmentCommentBinding, Commen
     @Override
     protected CommentViewModel createViewModel() {
         return new ViewModelProvider(getActivity()).get(CommentViewModel.class);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -81,15 +69,12 @@ public class CommentFragment extends BaseFragment<FragmentCommentBinding, Commen
     }
 
     @Override
-    protected void bindAction() {
-        compositeDisposable.add(
-                viewModel
-                        .uiStateSubject
-                        .map((Function<CommentViewModel.UiState, ArrayList<Comment>>) uiState -> uiState.comments)
-                        .distinctUntilChanged()
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe((Consumer<ArrayList<Comment>>) this::showComments)
-        );
+    protected void bindState() {
+        viewModel
+                .uiState
+                .observe(this, uiState -> {
+                    showComments(uiState.comments);
+                });
     }
 
     private void showComments(ArrayList<Comment> comments) {

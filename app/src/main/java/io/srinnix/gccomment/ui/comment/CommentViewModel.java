@@ -5,10 +5,11 @@ import java.util.List;
 import java.util.UUID;
 
 import androidx.core.util.Pair;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-import io.reactivex.rxjava3.subjects.BehaviorSubject;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.srinnix.gccomment.base.BaseViewModel;
 import io.srinnix.gccomment.data.model.Comment;
@@ -18,7 +19,9 @@ import io.srinnix.gccomment.utils.UrlUtils;
 
 public class CommentViewModel extends BaseViewModel {
 
-    public BehaviorSubject<UiState> uiStateSubject = BehaviorSubject.createDefault(new UiState());
+    private final MutableLiveData<UiState> _uiState = new MutableLiveData<>(new UiState());
+    public final LiveData<UiState> uiState = (LiveData<UiState>) _uiState;
+
     private final PublishSubject<UiAction> actionSubject = PublishSubject.create();
 
     public CommentViewModel() {
@@ -29,9 +32,11 @@ public class CommentViewModel extends BaseViewModel {
                                 .map((Function<UiAction, UiAction.Submit>) action -> (UiAction.Submit) action)
                                 .flatMap(this::handleSubmitAction)
                                 .subscribe(comments -> {
-                                    UiState uiState = CommentViewModel.this.uiStateSubject.getValue();
-                                    uiState.comments = comments;
-                                    uiStateSubject.onNext(uiState);
+                                    UiState uiState = _uiState.getValue();
+                                    if (uiState != null) {
+                                        uiState.comments = comments;
+                                        _uiState.postValue(uiState);
+                                    }
                                 })
                 );
 
@@ -42,16 +47,18 @@ public class CommentViewModel extends BaseViewModel {
                                 .map((Function<UiAction, UiAction.ClickComment>) action -> (UiAction.ClickComment) action)
                                 .flatMap(this::handleClickCommentAction)
                                 .subscribe(comments -> {
-                                    UiState uiState = CommentViewModel.this.uiStateSubject.getValue();
-                                    uiState.comments = comments;
-                                    uiStateSubject.onNext(uiState);
+                                    UiState uiState = _uiState.getValue();
+                                    if (uiState != null) {
+                                        uiState.comments = comments;
+                                        _uiState.postValue(uiState);
+                                    }
                                 })
                 );
     }
 
     private Observable<ArrayList<Comment>> handleSubmitAction(UiAction.Submit uiAction) {
         return Observable
-                .just(new Pair<>(uiStateSubject.getValue().comments, uiAction.comment))
+                .just(new Pair<>(_uiState.getValue(), uiAction.comment))
                 .map(pair -> {
                     String inputComment = pair.second;
                     List<String> tags = extractTag(inputComment);
@@ -59,7 +66,7 @@ public class CommentViewModel extends BaseViewModel {
                     String id = UUID.randomUUID().toString();
                     Comment newComment = new Comment(id, inputComment, links, tags);
 
-                    ArrayList<Comment> oldComments = pair.first;
+                    ArrayList<Comment> oldComments = pair.first.comments;
                     ArrayList<Comment> newComments = new ArrayList<>(oldComments);
                     newComments.add(newComment);
 
@@ -90,18 +97,18 @@ public class CommentViewModel extends BaseViewModel {
 
     private Observable<ArrayList<Comment>> handleClickCommentAction(UiAction.ClickComment uiAction) {
         return Observable
-                .just(new Pair<>(uiStateSubject.getValue().comments, uiAction.position))
+                .just(new Pair<>(_uiState.getValue(), uiAction.position))
                 .filter(pair -> {
-                    ArrayList<Comment> comments = pair.first;
+                    ArrayList<Comment> comments = pair.first.comments;
                     int position = pair.second;
                     return position >= 0 && position < comments.size();
                 })
                 .map(pair -> {
-                    Comment oldComment = pair.first.get(pair.second);
+                    Comment oldComment = pair.first.comments.get(pair.second);
                     Comment newComment = new Comment(oldComment);
                     newComment.setExpand(!oldComment.isExpand());
 
-                    ArrayList<Comment> newComments = new ArrayList<>(pair.first);
+                    ArrayList<Comment> newComments = new ArrayList<>(pair.first.comments);
                     newComments.set(pair.second, newComment);
 
                     return newComments;
@@ -112,6 +119,7 @@ public class CommentViewModel extends BaseViewModel {
         actionSubject.onNext(action);
     }
 
+    /*---------------------------------- Inner class -----------------------------------------*/
     public static class UiState {
         public ArrayList<Comment> comments = new ArrayList<>();
     }
