@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="color_primary">#3E3E3E</color>
+    <color name="color_divider">#EEEEEE</color>
+    <color name="color_blue">#0000EE</color>
+
+    <color name="ic_launcher_background">#FAF7F7</color>
+
+    <!-- Text colors-->
+    <color name="text_primary">#3E3E3E</color>
+    <color name="text_secondary">#7E7E7E</color>
+    <color name="text_hint">#7E7E7E</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="white_2">#FAFAFA</color>
+    <color name="white_op_72">#B8FFFFFF</color>
+</resources>

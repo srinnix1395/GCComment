@@ -1,0 +1,14 @@
+ext {
+    android = [
+            applicationId    : "io.srinnix.gccomment",
+            minSdkVersion    : 23,
+            targetSdkVersion : 32,
+            compileSdkVersion: 32,
+    ]
+
+    versionInfo = [
+            versionCode  : 1,
+            versionName  : "1.0",
+            apkName      : "GCComment"
+    ]
+}

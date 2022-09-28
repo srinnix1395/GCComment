@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">GCComment</string>
+
+    <string name="comment_title">Comments</string>
+    <string name="comment_hint">Write a comment…</string>
+    <string name="comment_empty">There is no comment.</string>
+    <string name="comment_user_placeholder">User</string>
+
+</resources>

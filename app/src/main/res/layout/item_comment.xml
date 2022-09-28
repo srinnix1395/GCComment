@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_content"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/background_comment"
+    android:orientation="horizontal"
+    android:padding="@dimen/dimen8dp">
+
+    <ImageView
+        android:id="@+id/imv_avatar"
+        android:layout_width="@dimen/dimen32dp"
+        android:layout_height="@dimen/dimen32dp"
+        android:contentDescription="Avatar"
+        android:src="@drawable/ic_user" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dimen10dp"
+        android:animateLayoutChanges="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_author"
+            style="@style/SolasiTextView.Primary.Bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="@dimen/dimen4dp"
+            android:ellipsize="end"
+            android:lines="1"
+            android:singleLine="true"
+            android:text="@string/comment_user_placeholder"
+            android:textSize="@dimen/text_size_12" />
+
+        <io.srinnix.gccomment.widget.TextCommentView
+            android:id="@+id/tv_content"
+            style="@style/SolasiTextView.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen4dp"
+            android:ellipsize="end"
+            android:maxLines="3"
+            tools:text="@tools:sample/lorem/random" />
+
+        <TextView
+            android:id="@+id/tv_json"
+            style="@style/SolasiTextView.Secondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen2dp" />
+    </LinearLayout>
+</LinearLayout>
